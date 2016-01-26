@@ -1,5 +1,6 @@
 package com.berrezak.connection;
 
+import com.berrezak.core.IRCChannel;
 import com.berrezak.core.IRCProfile;
 
 import java.io.BufferedReader;
@@ -41,7 +42,6 @@ public class IRCMessageReader implements Runnable {
             int codeEnd = profile.getServer().length() + 5;
 
             String responseCode = line.substring(codeStart, codeEnd);
-            System.out.println(responseCode);
 
 
             int numberStarts;
@@ -93,7 +93,25 @@ public class IRCMessageReader implements Runnable {
                     System.out.println("logged in!");
                     break;
 
+                //Could not connect to channel, does not exist
+                case "403":
+                    for (IRCChannel ircChannel : profile.getChannels()) {
+                        if (line.contains(ircChannel.getChannelName())) {
+                            ircChannel.setConnected(false);
+                            System.out.println("<< could not connect to channel. Channel does not exist");
+                        }
+                    }
+                    break;
 
+                case "332":
+                    for (IRCChannel ircChannel : profile.getChannels()) {
+                        String lowerCaseline = line.toLowerCase();
+                        if (lowerCaseline.contains(ircChannel.getChannelName().toLowerCase())) {
+                            ircChannel.setConnected(true);
+                            System.out.println("<< connected to channel");
+                        }
+                    }
+                    break;
             }
         }
 
@@ -106,7 +124,6 @@ public class IRCMessageReader implements Runnable {
                 e.printStackTrace();
             }
         }
-
     }
 
     private List<String> mapServerData(String incLine, int incNumberStarts) {

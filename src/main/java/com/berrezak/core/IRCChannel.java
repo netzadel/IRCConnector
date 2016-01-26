@@ -1,6 +1,5 @@
 package com.berrezak.core;
 
-import com.berrezak.connection.IRCMessageReader;
 import com.berrezak.connection.IRCMessageSender;
 
 import java.io.IOException;
@@ -15,23 +14,55 @@ public class IRCChannel {
     private boolean enableHistory;
     private ArrayList<String> history;
     private IRCMessageSender sender;
+    private boolean connected;
 
     public IRCChannel(String channelName, boolean enableHistory, IRCMessageSender sender) {
-        this.channelName = channelName;
+        this.channelName = "#" + channelName;
         this.enableHistory = enableHistory;
         this.sender = sender;
     }
 
-    public void connectToChannel(){
-        try {
-            if(!channelName.isEmpty() && sender != null)
-                sender.joinChannel(this.channelName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void sendMessage(String message) throws IOException {
+        sender.sendMessage(this.channelName, message);
     }
 
-    public void sendMessage(String message){
+    public String getChannelName() {
+        return channelName;
+    }
 
+    public void setChannelName(String channelName) {
+        this.channelName = "#" + channelName;
+    }
+
+    public boolean isEnableHistory() {
+        return enableHistory;
+    }
+
+    public void setEnableHistory(boolean enableHistory) {
+        this.enableHistory = enableHistory;
+    }
+
+    public ArrayList<String> getHistory() {
+        return history;
+    }
+
+    public void setHistory(ArrayList<String> history) {
+        this.history = history;
+    }
+
+    public IRCMessageSender getSender() {
+        return sender;
+    }
+
+    public void setSender(IRCMessageSender sender) {
+        this.sender = sender;
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
     }
 }

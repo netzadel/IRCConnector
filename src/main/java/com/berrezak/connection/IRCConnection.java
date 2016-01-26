@@ -34,6 +34,11 @@ public class IRCConnection {
         BufferedWriter buffWriter = new BufferedWriter(outputStreamWriter);
 
         sender = new IRCMessageSender(buffWriter, profile);
+        //send password
+        sender.sendPassword();
+        //send login
+        //TODO add queue handling
+        sender.sendLogin();
 
         reader = new IRCMessageReader(buffReader, sender, profile);
         Thread t = new Thread(reader);
@@ -51,17 +56,10 @@ public class IRCConnection {
             }
         }
 
-        if (profile.getServerInfo().isConnected()) {
-            //send password
-            sender.sendPassword();
-            //send login
-            //TODO add queue handling
-            sender.sendLogin();
-        }
+        if (profile.getServerInfo().isConnected())
+            System.out.println(">> Connected.");
         else
-            System.out.println("Not Connected.");
-
-
+            System.out.println(">> Not Connected.");
     }
 
     public IRCMessageSender getSender() {

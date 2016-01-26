@@ -2,6 +2,8 @@ package com.berrezak.core;
 
 import com.berrezak.connection.IRCServerInformation;
 
+import java.util.ArrayList;
+
 /**
  * Created by ElBerro on 17.01.2016.
  */
@@ -12,6 +14,7 @@ public class IRCProfile {
     private String password;
     private int port;
     private IRCServerInformation serverInfo;
+    private ArrayList<IRCChannel> channels;
 
     public IRCProfile(String username, String server, int port) {
         this.username = username;
@@ -19,6 +22,7 @@ public class IRCProfile {
         this.port = port;
 
         serverInfo = new IRCServerInformation();
+        channels = new ArrayList<>();
     }
 
     public IRCProfile(String username, String server, String password, int port) {
@@ -26,6 +30,9 @@ public class IRCProfile {
         this.server = server;
         this.password = password;
         this.port = port;
+
+        serverInfo = new IRCServerInformation();
+        channels = new ArrayList<>();
     }
 
     public String getUsername() {
@@ -62,5 +69,9 @@ public class IRCProfile {
 
     public IRCServerInformation getServerInfo() {
         return serverInfo;
+    }
+
+    public ArrayList<IRCChannel> getChannels() {
+        return channels;
     }
 }

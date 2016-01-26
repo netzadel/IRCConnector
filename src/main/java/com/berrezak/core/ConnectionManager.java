@@ -1,6 +1,7 @@
 package com.berrezak.core;
 
 import com.berrezak.connection.IRCConnection;
+import com.berrezak.connection.IRCMessageSender;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,15 +13,14 @@ public class ConnectionManager {
 
     private IRCProfile profile;
     private IRCConnection connection;
-    private ArrayList<IRCChannel> channels;
+
 
     public ConnectionManager(IRCProfile profile) {
         this.profile = profile;
     }
 
-    public void openConnection(){
+    public void openConnection() {
         connection = new IRCConnection(profile);
-        channels = new ArrayList<>();
         try {
             connection.connect();
         } catch (IOException e) {
@@ -28,11 +28,32 @@ public class ConnectionManager {
         }
     }
 
-    public IRCChannel createChannel(String channelName, Boolean enableHistory){
-        IRCChannel channel = new IRCChannel(channelName, enableHistory, connection.getSender());
-        channels.add(channel);
-        return channel;
+    public IRCChannel connectChannel(String channelName, Boolean enableHistory) throws IOException {
+        if (profile.getServerInfo().isConnected()) {
+            IRCChannel channel = new IRCChannel(channelName, enableHistory, connection.getSender());
+            IRCMessageSender sender = connection.getSender();
+
+            if (!channelName.isEmpty() && sender != null) {
+                profile.getChannels().add(channel);
+                sender.joinChannel(channel.getChannelName());
+
+                int timeout = 10; //Seconds
+                while (timeout > 0) {
+                    if (channel.isConnected()) {
+                        return channel;
+                    }
+                    timeout--;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        //TODO: Hope that there wont be an exception
+                    }
+                }
+            }
+        }
+        return null;
     }
 
-    public void joinChannel(){}
+    public void joinChannel() {
+    }
 }

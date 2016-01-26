@@ -1,5 +1,6 @@
 package com.berrezak.connection;
 
+import com.berrezak.core.IRCChannel;
 import com.berrezak.core.IRCProfile;
 
 import java.io.BufferedWriter;
@@ -49,6 +50,10 @@ public class IRCMessageSender {
 
     public void joinChannel(String channelName) throws IOException{
         writeRawMessage("JOIN " + channelName);
+    }
+
+    public void sendMessage(String channelName, String message) throws IOException{
+        writeRawMessage("PRIVMSG " + channelName + " " + message);
     }
 
     public void writeRawMessage(String message) throws IOException {
