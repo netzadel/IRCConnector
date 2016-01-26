@@ -7,9 +7,9 @@ public class IRCServerInformation {
 
     private int operators;
     private int channels;
-    private int clients;
     private int visibleUser;
     private int invisibleUser;
+    private boolean isConnected;
 
     public int getOperators() {
         return operators;
@@ -27,13 +27,6 @@ public class IRCServerInformation {
         this.channels = channels;
     }
 
-    public int getClients() {
-        return clients;
-    }
-
-    public void setClients(int clients) {
-        this.clients = clients;
-    }
 
     public int getVisibleUser() {
         return visibleUser;
@@ -49,5 +42,13 @@ public class IRCServerInformation {
 
     public void setInvisibleUser(int invisibleUser) {
         this.invisibleUser = invisibleUser;
+    }
+
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    public void setConnected(boolean connected) {
+        isConnected = connected;
     }
 }

@@ -45,7 +45,10 @@ public class IRCMessageSender {
         if (channelName != null && !channelName.equals("")) {
             this.writeRawMessage("NAMES " + channelName);
         }
+    }
 
+    public void joinChannel(String channelName) throws IOException{
+        writeRawMessage("JOIN " + channelName);
     }
 
     public void writeRawMessage(String message) throws IOException {
