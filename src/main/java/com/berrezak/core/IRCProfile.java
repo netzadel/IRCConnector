@@ -22,7 +22,7 @@ public class IRCProfile {
         this.port = port;
 
         serverInfo = new IRCServerInformation();
-        channels = new ArrayList<>();
+        channels = new ArrayList<IRCChannel>();
     }
 
     public IRCProfile(String username, String server, String password, int port) {
@@ -32,7 +32,7 @@ public class IRCProfile {
         this.port = port;
 
         serverInfo = new IRCServerInformation();
-        channels = new ArrayList<>();
+        channels = new ArrayList<IRCChannel>();
     }
 
     public String getUsername() {

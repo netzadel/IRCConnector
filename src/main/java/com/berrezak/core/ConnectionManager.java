@@ -11,6 +11,9 @@ import java.util.ArrayList;
  */
 public class ConnectionManager {
 
+    //TODO: Add history for chat
+    //TODO: Add event handling
+
     private IRCProfile profile;
     private IRCConnection connection;
 
@@ -39,6 +42,7 @@ public class ConnectionManager {
 
                 int timeout = 10; //Seconds
                 while (timeout > 0) {
+                    //The reader will set the isConnected flag of the channel to true as soon as it receives the connection result from IRCServer
                     if (channel.isConnected()) {
                         return channel;
                     }
@@ -52,8 +56,5 @@ public class ConnectionManager {
             }
         }
         return null;
-    }
-
-    public void joinChannel() {
     }
 }

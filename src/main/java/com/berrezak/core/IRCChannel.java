@@ -4,6 +4,7 @@ import com.berrezak.connection.IRCMessageSender;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ElBerro on 25.01.2016.
@@ -12,18 +13,42 @@ public class IRCChannel {
 
     private String channelName;
     private boolean enableHistory;
-    private ArrayList<String> history;
+    private List<String> history;
+    private List<String> userInChannel;
+    private List<IMessageReceiver> receivers;
     private IRCMessageSender sender;
     private boolean connected;
 
+
     public IRCChannel(String channelName, boolean enableHistory, IRCMessageSender sender) {
+        receivers = new ArrayList<>();
+        history = new ArrayList<>();
         this.channelName = "#" + channelName;
         this.enableHistory = enableHistory;
         this.sender = sender;
     }
 
+    public void receivedMessage(String message){
+        this.history.add(message);
+        for (IMessageReceiver receiver : receivers) {
+            receiver.receivedMessage("", message);
+        }
+    }
+
+    public void registerForChatMessages(IMessageReceiver receiver){
+        receivers.add(receiver);
+    }
+
     public void sendMessage(String message) throws IOException {
         sender.sendMessage(this.channelName, message);
+    }
+
+    public List<String> getUserInChannel() {
+        return userInChannel;
+    }
+
+    public void setUserInChannel(List<String> userInChannel) {
+        this.userInChannel = userInChannel;
     }
 
     public String getChannelName() {
@@ -42,11 +67,11 @@ public class IRCChannel {
         this.enableHistory = enableHistory;
     }
 
-    public ArrayList<String> getHistory() {
+    public List<String> getHistory() {
         return history;
     }
 
-    public void setHistory(ArrayList<String> history) {
+    public void setHistory(List<String> history) {
         this.history = history;
     }
 
