@@ -18,49 +18,54 @@ public class IRCMessageSender {
         this.bWriter = incWriter;
     }
 
-    public void initializeConnection() throws IOException {
+    public void initializeConnection() {
         this.writeRawMessage("CAP LS");
     }
 
-    public void sendPassword() throws IOException {
+    public void sendPassword() {
         if (profile.getPassword() != null && !profile.getPassword().equals("")) {
             this.writeRawMessage("PASS " + profile.getPassword());
         }
     }
 
-    public void sendLogin() throws IOException {
+    public void sendLogin() {
         this.writeRawMessage("NICK " + this.profile.getUsername());
         this.writeRawMessage("USER " + this.profile.getUsername() + " 0 * :...");
         this.writeRawMessage("MODE " + this.profile.getUsername() + " -i");
     }
 
-    public void sendVersion() throws IOException {
+    public void sendVersion() {
         this.writeRawMessage("NOTICE evMON :VERSION berryIRC 1.0");
     }
 
-    public void sendPing(String incRequest) throws IOException {
+    public void sendPing(String incRequest) {
         this.writeRawMessage(":" + this.profile.getServer() + " PONG " + incRequest);
     }
 
-    public void sendNames(String channelName) throws IOException {
+    public void sendNames(String channelName) {
         if (channelName != null && !channelName.equals("")) {
             this.writeRawMessage("NAMES " + channelName);
         }
     }
 
-    public void joinChannel(String channelName) throws IOException{
+    public void joinChannel(String channelName) {
         writeRawMessage("JOIN " + channelName);
     }
 
-    public void sendMessage(String channelName, String message) throws IOException{
+    public void sendMessage(String channelName, String message) {
         writeRawMessage("PRIVMSG " + channelName + " " + message);
     }
 
-    public void writeRawMessage(String message) throws IOException {
+    public void writeRawMessage(String message) {
         if (this.bWriter != null) {
             System.out.println(">> " + message);
-            this.bWriter.write(message + "\r\n");
-            this.bWriter.flush();
+            try {
+                this.bWriter.write(message + "\r\n");
+                this.bWriter.flush();
+            } catch (IOException e) {
+                //TODO: better exception handling
+                e.printStackTrace();
+            }
         }
 
     }

@@ -30,8 +30,14 @@ public class IRCChannel {
 
     public void receivedMessage(String message){
         this.history.add(message);
+
+        //get username and message only.
+        String[] parted = message.split(":");
+        String userTMP = parted[1].split("!")[0];
+        String messageTMP = parted[2];
+
         for (IMessageReceiver receiver : receivers) {
-            receiver.receivedMessage("", message);
+            receiver.receivedMessage(userTMP, messageTMP);
         }
     }
 
@@ -39,7 +45,7 @@ public class IRCChannel {
         receivers.add(receiver);
     }
 
-    public void sendMessage(String message) throws IOException {
+    public void sendMessage(String message) {
         sender.sendMessage(this.channelName, message);
     }
 

@@ -24,14 +24,10 @@ public class ConnectionManager {
 
     public void openConnection() {
         connection = new IRCConnection(profile);
-        try {
-            connection.connect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        connection.connect();
     }
 
-    public IRCChannel connectChannel(String channelName, Boolean enableHistory) throws IOException {
+    public IRCChannel connectChannel(String channelName, Boolean enableHistory) {
         if (profile.getServerInfo().isConnected()) {
             IRCChannel channel = new IRCChannel(channelName, enableHistory, connection.getSender());
             IRCMessageSender sender = connection.getSender();

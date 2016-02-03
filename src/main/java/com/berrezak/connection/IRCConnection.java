@@ -20,18 +20,25 @@ public class IRCConnection {
         this.profile = profile;
     }
 
-    public void connect() throws IOException {
+    public void connect() {
 
         // Connect to the server.
-        Socket socket = new Socket(profile.getServer(), profile.getPort());
+        BufferedReader buffReader = null;
+        BufferedWriter buffWriter = null;
+        try {
+            Socket socket = new Socket(profile.getServer(), profile.getPort());
 
-        InetAddress intetAddress = socket.getLocalAddress();
+            InetAddress intetAddress = socket.getLocalAddress();
 
-        InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
-        BufferedReader buffReader = new BufferedReader(inputStreamReader);
+            InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
+            buffReader = new BufferedReader(inputStreamReader);
 
-        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream());
-        BufferedWriter buffWriter = new BufferedWriter(outputStreamWriter);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream());
+            buffWriter = new BufferedWriter(outputStreamWriter);
+        } catch (IOException e) {
+            //TODO: Better exception handling
+            e.printStackTrace();
+        }
 
         sender = new IRCMessageSender(buffWriter, profile);
         //send password
