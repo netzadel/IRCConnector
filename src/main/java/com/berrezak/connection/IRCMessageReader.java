@@ -38,8 +38,10 @@ public class IRCMessageReader implements Runnable {
     }
 
     private void interpretLine(String line) {
-        System.out.println(line);
-        if (line.startsWith(":")) {
+        //System.out.println(line);
+        if (line.startsWith("PING"))
+            sender.sendPing(line.substring(5));
+        else if (line.startsWith(":")) {
             int codeStart = profile.getServer().length() + 2;
             int codeEnd = profile.getServer().length() + 5;
 
@@ -47,19 +49,44 @@ public class IRCMessageReader implements Runnable {
 
             if (StringUtils.isNumeric(responseCode)) {
                 this.interpretStatusNumber(responseCode, line);
-            }
+            } else
+                this.interpreteStatusText(line);
+        }
+    }
 
-            if (line.contains("PRIVMSG")) {
+    private void interpreteStatusText(String line) {
+        if (line.contains("PRIVMSG")) {
+            IRCChannel channel = this.getAppropriateChannel(line);
+            if (channel != null) {
+                channel.receivedMessage(line);
+            }
+        }
+        //Add user he joins the channel and is not already in the user list
+        else if (line.contains("JOIN")) {
+            String[] parted = line.split(":");
+            String userTMP = parted[1].split("!")[0];
+
+            if (!userTMP.equals(profile.getUsername())) {
                 IRCChannel channel = this.getAppropriateChannel(line);
-                if (channel != null) {
-                    channel.receivedMessage(line);
+                if (channel != null && !channel.getUserInChannel().contains(userTMP)) {
+                    channel.getUserInChannel().add(userTMP);
+                    System.out.println("<< added user " + userTMP + " to channels user list");
                 }
             }
-
         }
+        //Remove user from user list if he is part of the list
+        else if (line.contains("QUIT")) {
+            String[] parted = line.split(":");
+            String userTMP = parted[1].split("!")[0];
 
-        if (line.startsWith("PING")) {
-            sender.sendPing(line.substring(5));
+            if (!userTMP.equals(profile.getUsername())) {
+                profile.getChannels().stream().sorted().forEach(channel -> channel.getUserInChannel().stream().sorted().forEach(user -> {
+                    if (user.equals(userTMP)) {
+                        channel.getUserInChannel().remove(userTMP);
+                        System.out.println("<< removed user " + userTMP + " from channels user list");
+                    }
+                }));
+            }
         }
     }
 
@@ -113,7 +140,7 @@ public class IRCMessageReader implements Runnable {
             //Try to get channels open on server
             case "001": {
                 profile.getServerInfo().setConnected(true);
-                System.out.println("logged in!");
+                System.out.println("<< successfully connected to server " + profile.getServer());
                 break;
             }
 
@@ -127,15 +154,17 @@ public class IRCMessageReader implements Runnable {
                 break;
             }
 
+            //Set connection state of channel
             case "332": {
                 IRCChannel channel = this.getAppropriateChannel(line);
                 if (channel != null) {
                     channel.setConnected(true);
-                    System.out.println("<< connected to channel");
+                    System.out.println("<< connected to channel " + channel.getChannelName());
                 }
                 break;
             }
 
+            //Get list of users
             case "353": {
                 IRCChannel channel = this.getAppropriateChannel(line);
                 if (channel != null) {
@@ -143,7 +172,7 @@ public class IRCMessageReader implements Runnable {
                         String names = line.split(":")[2];
                         if (!names.isEmpty() && names.trim().length() > 0) {
                             String[] nameList = names.split(" ");
-                            channel.setUserInChannel(Arrays.asList(nameList));
+                            channel.getUserInChannel().addAll(Arrays.asList(nameList));
                         }
                     }
                     System.out.println("<< updated user list of channel");

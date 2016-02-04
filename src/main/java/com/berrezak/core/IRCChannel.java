@@ -23,6 +23,7 @@ public class IRCChannel {
     public IRCChannel(String channelName, boolean enableHistory, IRCMessageSender sender) {
         receivers = new ArrayList<>();
         history = new ArrayList<>();
+        userInChannel = new ArrayList<>();
         this.channelName = "#" + channelName;
         this.enableHistory = enableHistory;
         this.sender = sender;

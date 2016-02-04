@@ -59,14 +59,14 @@ public class IRCConnection {
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {
-                //TODO: Hope that there wont be an exception
+                //TODO: Hoping that there wont be an exception
             }
         }
 
         if (profile.getServerInfo().isConnected())
-            System.out.println(">> Connected.");
+            System.out.println("<< Connected.");
         else
-            System.out.println(">> Not Connected.");
+            System.out.println("<< Not Connected.");
     }
 
     public IRCMessageSender getSender() {
