@@ -2,6 +2,8 @@ package com.berrezak.connection;
 
 import com.berrezak.core.IRCChannel;
 import com.berrezak.core.IRCProfile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -15,13 +17,14 @@ public class IRCConnection {
     private IRCProfile profile;
     private IRCMessageSender sender;
     private IRCMessageReader reader;
+    private static Logger logger = LoggerFactory.getLogger(IRCConnection.class);
 
     public IRCConnection(IRCProfile profile) {
         this.profile = profile;
+        logger.info("Initialized connection object.");
     }
 
     public void connect() {
-
         // Connect to the server.
         BufferedReader buffReader = null;
         BufferedWriter buffWriter = null;
@@ -35,16 +38,17 @@ public class IRCConnection {
 
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream());
             buffWriter = new BufferedWriter(outputStreamWriter);
+
+            logger.info("Connected successfully to server: ", profile.getServer());
         } catch (IOException e) {
-            //TODO: Better exception handling
-            e.printStackTrace();
+            logger.error("failed to connect to: {} reason: {}", profile.getServer(), e.getMessage());
+            logger.error("failed to connect.", e);
         }
 
         sender = new IRCMessageSender(buffWriter, profile);
         //send password
         sender.sendPassword();
         //send login
-        //TODO add queue handling
         sender.sendLogin();
 
         reader = new IRCMessageReader(buffReader, sender, profile);
@@ -59,22 +63,14 @@ public class IRCConnection {
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {
-                //TODO: Hoping that there wont be an exception
+                logger.error("Failed to logon on server. Reason: {}", e.getMessage());
+                logger.error("Failed to logon.", e);
             }
         }
-
-        if (profile.getServerInfo().isConnected())
-            System.out.println("<< Connected.");
-        else
-            System.out.println("<< Not Connected.");
     }
 
     public IRCMessageSender getSender() {
         return sender;
-    }
-
-    public IRCMessageReader getReader() {
-        return reader;
     }
 }
 

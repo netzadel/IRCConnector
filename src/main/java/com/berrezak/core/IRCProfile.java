@@ -74,4 +74,9 @@ public class IRCProfile {
     public ArrayList<IRCChannel> getChannels() {
         return channels;
     }
+
+    @Override
+    public String toString() {
+        return "profile data: " + server + port + " user:" + username;
+    }
 }

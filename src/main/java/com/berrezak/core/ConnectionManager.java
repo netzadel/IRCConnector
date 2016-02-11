@@ -2,6 +2,8 @@ package com.berrezak.core;
 
 import com.berrezak.connection.IRCConnection;
 import com.berrezak.connection.IRCMessageSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,16 +12,18 @@ import java.util.ArrayList;
  * Created by ElBerro on 17.01.2016.
  */
 public class ConnectionManager {
-
-    //TODO: Add history for chat
-    //TODO: Add event handling
+    //TODO: Better exception handling
+    //TODO: Better logging
+    //TODO: Allow private messages
+    //TODO: Testing
 
     private IRCProfile profile;
     private IRCConnection connection;
-
+    private static Logger logger = LoggerFactory.getLogger(ConnectionManager.class);
 
     public ConnectionManager(IRCProfile profile) {
         this.profile = profile;
+        logger.info("Initialized connection manager." + profile.toString());
     }
 
     public void openConnection() {
@@ -46,7 +50,7 @@ public class ConnectionManager {
                     try {
                         Thread.sleep(1000);
                     } catch (Exception e) {
-                        //TODO: Hope that there wont be an exception
+                        e.printStackTrace();
                     }
                 }
             }

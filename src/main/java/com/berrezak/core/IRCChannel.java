@@ -1,6 +1,8 @@
 package com.berrezak.core;
 
 import com.berrezak.connection.IRCMessageSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ public class IRCChannel {
     private List<IMessageReceiver> receivers;
     private IRCMessageSender sender;
     private boolean connected;
+    private static Logger logger = LoggerFactory.getLogger(IRCChannel.class);
 
 
     public IRCChannel(String channelName, boolean enableHistory, IRCMessageSender sender) {
@@ -29,8 +32,9 @@ public class IRCChannel {
         this.sender = sender;
     }
 
-    public void receivedMessage(String message){
-        this.history.add(message);
+    public void receivedMessage(String message) {
+        if (enableHistory)
+            this.history.add(message);
 
         //get username and message only.
         String[] parted = message.split(":");
@@ -40,9 +44,11 @@ public class IRCChannel {
         for (IMessageReceiver receiver : receivers) {
             receiver.receivedMessage(userTMP, messageTMP);
         }
+        logger.info("Received message in channel: {} from: {} content: {}", this.getChannelName(), userTMP, messageTMP);
     }
 
-    public void registerForChatMessages(IMessageReceiver receiver){
+    public void registerForChatMessages(IMessageReceiver receiver) {
+        logger.info("{} registered for chat messages.", receiver.getClass().toString());
         receivers.add(receiver);
     }
 
